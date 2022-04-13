@@ -19,4 +19,6 @@ TAA fixes those issues and efficiently super samples the details of the image.
 
 A Halton length of 8 should be enough (roughly 8x super sampling), larger values seem to make the jittering more obvious.
 
-Tested with Unity 2021.2 on URP 12
+# Requirements
+- Unity 2021.2+ with URP 12 -> Should also work with most other versions, I just didn't test it.
+- Unity.Mathematics (https://docs.unity3d.com/Packages/com.unity.mathematics@1.1/)
