@@ -9,6 +9,7 @@ https://de45xmedrsdbp.cloudfront.net/Resources/files/TemporalAA_small-59732822.p
 
 # Comparison
 ![Anti-Aliasing comparison](https://github.com/CMDRSpirit/URPTemporalAA/blob/main/res/comp.png?raw=true)
+
 You can easily see that FXAA is more or less a blurry mess everywhere. SMAA is much cleaner but still has issues with very thin details, like the rope.
 TAA fixes those issues and efficiently super samples the details of the image.
 
