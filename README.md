@@ -3,7 +3,7 @@ This is a Temporal Anti-Aliasing (TAA) solution for Unity's Universal render pip
 
 NOTE: URP does not support true motion vectors, so we rely on Neighborhood Clipping to deal with objects in motion. It should be fine though when the game runs at 60+ FPS, but this can definately depend on the use case.
 
-The implemetation is based up on the Siggraph2014 talk by Brian Karis:
+This implementation is based up on the Siggraph2014 talk by Brian Karis:
 High Quality Temporal Supersampling
 https://de45xmedrsdbp.cloudfront.net/Resources/files/TemporalAA_small-59732822.pdf
 
