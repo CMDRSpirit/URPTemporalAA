@@ -13,6 +13,9 @@ https://de45xmedrsdbp.cloudfront.net/Resources/files/TemporalAA_small-59732822.p
 You can easily see that FXAA is more or less a blurry mess everywhere. SMAA is much cleaner but still has issues with very thin details, like the rope.
 TAA fixes those issues and efficiently super samples the details of the image.
 
+A Video is available on my youtube channel:
+https://www.youtube.com/watch?v=0D_8q_3q0_s
+
 # Usage
 - Attach Temporal AA Camera script to your camera
 - Add Temporal AA Feature to your renderer
