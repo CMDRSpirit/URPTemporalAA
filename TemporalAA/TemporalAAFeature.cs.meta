@@ -3,7 +3,8 @@ guid: b49db325366a51e408a57f6588940f70
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - TAAMaterial: {fileID: 2100000, guid: 2b9d611108abd0047abdd27d7ca47e21, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

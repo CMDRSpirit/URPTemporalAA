@@ -30,17 +30,21 @@ using Unity.Mathematics;
 public class TemporalAAFeature : ScriptableRendererFeature
 {
     [Range(0, 1)]
-    public float TemporalFade = 0.8f;
+    public float TemporalFade = 0.99f;
+    public float MovementBlending = 100;
+
+    public Material TAAMaterial;
 
     class TemporalAAPass : ScriptableRenderPass
     {
 
         [Range(0, 1)]
-        public float TemporalFade = 0;
+        public float TemporalFade;
+        public float MovementBlending;
+
+        public Material TAAMaterial;
 
         public static RenderTexture temp, temp1;
-
-        private Material mat;
 
         private Matrix4x4 prevViewProjectionMatrix;
 
@@ -61,9 +65,25 @@ public class TemporalAAFeature : ScriptableRendererFeature
         // The render pipeline will ensure target setup and clearing happens in an performance manner.
         public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
         {
-            if (temp && (cameraTextureDescriptor.width != temp.width || cameraTextureDescriptor.height != temp.height))
+
+        }
+
+
+        public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
+        {
+            base.OnCameraSetup(cmd, ref renderingData);
+
+            if (!renderingData.cameraData.camera.GetComponent<TemporalAACamera>())
+                return;
+
+            ConfigureInput(ScriptableRenderPassInput.Color);
+            ConfigureInput(ScriptableRenderPassInput.Depth);
+
+            RenderTextureDescriptor currentCameraDescriptor = renderingData.cameraData.cameraTargetDescriptor;
+
+            if (temp && (currentCameraDescriptor.width != temp.width || currentCameraDescriptor.height != temp.height))
             {
-                Debug.Log("Deleting Render Target: " + cameraTextureDescriptor.width + " " + temp.width);
+                Debug.Log("Deleting Render Target: " + currentCameraDescriptor.width + " " + temp.width);
 
                 temp.Release();
                 temp1.Release();
@@ -72,20 +92,11 @@ public class TemporalAAFeature : ScriptableRendererFeature
 
             if (!temp)
             {
-                temp = new RenderTexture(cameraTextureDescriptor);
-                temp1 = new RenderTexture(cameraTextureDescriptor);
+                temp = new RenderTexture(currentCameraDescriptor.width, currentCameraDescriptor.height, UnityEngine.Experimental.Rendering.GraphicsFormat.R16G16B16A16_SFloat, 0);
+                temp1 = new RenderTexture(currentCameraDescriptor.width, currentCameraDescriptor.height, UnityEngine.Experimental.Rendering.GraphicsFormat.R16G16B16A16_SFloat, 0);
 
                 Debug.Log("Allocating new Render Target");
             }
-        }
-
-
-        public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
-        {
-            base.OnCameraSetup(cmd, ref renderingData);
-
-            ConfigureInput(ScriptableRenderPassInput.Color);
-            ConfigureInput(ScriptableRenderPassInput.Depth);
         }
 
         // Here you can implement the rendering logic.
@@ -94,28 +105,27 @@ public class TemporalAAFeature : ScriptableRendererFeature
         // You don't have to call ScriptableRenderContext.submit, the render pipeline will call it at specific points in the pipeline.
         public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
         {
+            //Only enable TAA on the camera featuring the TAA Camera script
+            if (!renderingData.cameraData.camera.GetComponent<TemporalAACamera>())
+                return;
+
             CommandBuffer cmd = CommandBufferPool.Get("TemporalAAPass");
 
-            if (!mat)
-            {
-                mat = Resources.Load<Material>("Graphics/TemporalAA/TemporalAAMaterial");
-            }
 
-
-
-            mat.SetTexture("_TemporalAATexture", temp);
+            TAAMaterial.SetTexture("_TemporalAATexture", temp);
 
 
             Matrix4x4 mt = renderingData.cameraData.camera.nonJitteredProjectionMatrix.inverse;
-            mat.SetMatrix("_invP", mt);
+            TAAMaterial.SetMatrix("_invP", mt);
 
             mt = this.prevViewProjectionMatrix * renderingData.cameraData.camera.cameraToWorldMatrix;
-            mat.SetMatrix("_FrameMatrix", mt);
+            TAAMaterial.SetMatrix("_FrameMatrix", mt);
 
-            mat.SetFloat("_TemporalFade", TemporalFade);
+            TAAMaterial.SetFloat("_TemporalFade", TemporalFade);
+            TAAMaterial.SetFloat("_MovementBlending", MovementBlending);
 
 
-            Blit(cmd, BuiltinRenderTextureType.CurrentActive, temp1, mat);
+            Blit(cmd, BuiltinRenderTextureType.CurrentActive, temp1, TAAMaterial);
 
             Blit(cmd, temp1, renderingData.cameraData.renderer.cameraColorTarget);
 
@@ -147,9 +157,11 @@ public class TemporalAAFeature : ScriptableRendererFeature
     {
         m_temporalPass = new TemporalAAPass();
         m_temporalPass.TemporalFade = this.TemporalFade;
+        m_temporalPass.MovementBlending = this.MovementBlending;
+        m_temporalPass.TAAMaterial = this.TAAMaterial;
 
         // Configures where the render pass should be injected.
-        m_temporalPass.renderPassEvent = RenderPassEvent.BeforeRenderingPostProcessing;
+        m_temporalPass.renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing;
     }
 
     // Here you can inject one or multiple render passes in the renderer.
