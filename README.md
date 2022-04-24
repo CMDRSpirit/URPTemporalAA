@@ -7,6 +7,11 @@ This implementation is based on the Siggraph2014 talk by Brian Karis:
 High Quality Temporal Supersampling
 https://de45xmedrsdbp.cloudfront.net/Resources/files/TemporalAA_small-59732822.pdf
 
+## Limitations
+- Some pixel flickering at thin lines
+- Does not work with active MSAA
+- Only one camera with TAA is supported at the moment
+
 ## Comparison
 ![Anti-Aliasing comparison](https://github.com/CMDRSpirit/URPTemporalAA/blob/main/res/comp.png?raw=true)
 
@@ -17,9 +22,19 @@ A Video is available on my youtube channel:
 https://www.youtube.com/watch?v=0D_8q_3q0_s
 
 ## Usage
-- Attach Temporal AA Camera script to your camera
-- Add Temporal AA Feature to your renderer
+- Render Pipeline Asset:
+  - Make sure MSAA is disabled
+  - Enable Depth / Opaque Textures
+- Camera:
+  - Disable any anti-aliasing method on your camera
+  - Attach Temporal AA Camera script to your camera
+- Renderer Asset:
+  - Add Temporal AA Feature to your renderer
 - Done! 
+
+### Suggested Settings
+- TemporalFade: 0.99 -> Lower leads to the current value being more represented in the final image, but more jittering is visible
+- MovementBlending: 100 -> Higher leads to more aggressive pixel rejection
 
 A Halton length of 8 should be enough (roughly 8x super sampling), larger values seem to make the jittering more obvious.
 
