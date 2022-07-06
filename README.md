@@ -27,7 +27,6 @@ https://www.youtube.com/watch?v=0D_8q_3q0_s
   - Enable Depth / Opaque Textures
 - Camera:
   - Disable any anti-aliasing method on your camera
-  - Attach Temporal AA Camera script to your camera
 - Renderer Asset:
   - Add Temporal AA Feature to your renderer
 - Done! 
