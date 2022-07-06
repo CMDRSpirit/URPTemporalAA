@@ -156,7 +156,6 @@ public class TemporalAAFeature : ScriptableRendererFeature
         {
             TemporalFade = feature.TemporalFade;
             MovementBlending = feature.MovementBlending;
-            TAAMaterial = feature.TAAMaterial;
             HaltonLength = feature.HaltonLength;
             JitterSpread = feature.JitterSpread;
         }
